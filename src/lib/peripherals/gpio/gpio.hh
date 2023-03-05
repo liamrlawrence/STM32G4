@@ -2,18 +2,23 @@
 // File Name    : gpio.hh
 // Authors      : Liam Lawrence
 // Created      : January 19, 2023
-// Project      : STM32G4 Embedded Modules
+// Project      : STM32G4 Module Library
 // License      : MIT
 // Copyright    : (C) 2023, Liam Lawrence
 //
-// Updated      : January 19, 2023
+// Updated      : February 25, 2023
 //------------------------------------------------------------------------------
 
-#ifndef EMBED_GPIO_HH
-#define EMBED_GPIO_HH
+#ifndef STM32G4_MODULE_LIBRARY_GPIO_HH
+#define STM32G4_MODULE_LIBRARY_GPIO_HH
 
 #include <cstdint>
+
+#ifdef UNIT_TEST
+#include "../../chip/stm32g491/stm32g491_mock.hh"
+#else
 #include "../../../../include/stm32g491xx.h"
+#endif
 
 
 
@@ -27,13 +32,13 @@ public:
 		ANALOG = 0b11
 	};
 
-	enum class Pin_Type {
+	enum class Pin_OType {
 		// Doc: RM0440-9.4.2
 		PUSH_PULL = 0b0,
 		OPEN_DRAIN = 0b1
 	};
 
-	enum class Pin_Speed {
+	enum class Pin_OSpeed {
 		// Doc: RM0440-9.4.3
 		VERY_LOW_SPEED = 0b00,
 		LOW_SPEED = 0b01,
@@ -68,34 +73,31 @@ public:
 		AF15 = 0b1111
 	};
 
-	enum class Ports {
-		// Doc: RM0440-9.3.4
-		GPIO_A = 'A',
-		GPIO_B = 'B',
-		GPIO_C = 'C',
-		GPIO_D = 'D',
-		GPIO_E = 'E',
-		GPIO_F = 'F',
-		GPIO_G = 'G'
+	enum class Clock_Status {
+		// Doc: RM0440-7.4.15
+		DISABLED = 0b0,
+		ENABLED = 0b1,
 	};
 
-	virtual void enable_port_clock(const GPIO_Class::Ports port);
-	virtual void disable_port_clock(const GPIO_Class::Ports port);
+	typedef struct {
+		GPIO_TypeDef *port;     // Doc: RM0440-9.3.4 | A, B, C, D, E, F, & G
+		uint16_t number;        // Doc: RM0440-9.3.3 | 0-15
+	} GPIO_Pin_t;
 
-	virtual void set_mode(const GPIO_Class::Ports port, const uint8_t pin, GPIO_Class::Pin_Mode mode);
-	virtual void set_otype(const GPIO_Class::Ports port, const uint8_t pin, GPIO_Class::Pin_Type type);
-	virtual void set_ospeed(const GPIO_Class::Ports port, const uint8_t pin, GPIO_Class::Pin_Speed speed);
-	virtual void set_pullup_pulldown(const GPIO_Class::Ports port, const uint8_t pin, GPIO_Class::Pin_PUPD pupd);
-	virtual void set_alternate_function(const GPIO_Class::Ports port, const uint8_t pin, GPIO_Class::Pin_AF af);
+	static uint16_t read(GPIO_Pin_t GPIO_Pin);
+	static void set(GPIO_Pin_t GPIO_Pin);
+	static void clear(GPIO_Pin_t GPIO_Pin);
 
-	virtual uint8_t read(const GPIO_Class::Ports port, const uint8_t pin);
-	virtual void set(const GPIO_Class::Ports port, const uint8_t pin);
-	virtual void clear(const GPIO_Class::Ports port, const uint8_t pin);
+	static void set_mode(GPIO_Pin_t GPIO_Pin, Pin_Mode mode);
+	static void set_otype(GPIO_Pin_t GPIO_Pin, Pin_OType mode);
+	static void set_ospeed(GPIO_Pin_t GPIO_Pin, Pin_OSpeed ospeed);
+	static void set_pupd(GPIO_Pin_t GPIO_Pin, Pin_PUPD pupd);
+	static void set_alternate_function(GPIO_Pin_t GPIO_Pin, Pin_AF af);
+
+	static void set_port_clock(GPIO_TypeDef *port, GPIO_Class::Clock_Status clock_status);
 
 private:
-	virtual GPIO_TypeDef *port_enum2Register(const GPIO_Class::Ports port);
-	virtual void update_port_clock(const GPIO_Class::Ports port, const bool enable_port);
 };
 
 
-#endif //EMBED_GPIO_HH
+#endif //STM32G4_MODULE_LIBRARY_GPIO_HH
