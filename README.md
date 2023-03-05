@@ -1,1 +1,1 @@
-# STM32G4
+# STM32G4 Module Library
