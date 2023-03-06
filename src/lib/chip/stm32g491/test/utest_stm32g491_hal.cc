@@ -6,7 +6,7 @@
 // License      : MIT
 // Copyright    : (C) 2023, Liam Lawrence
 //
-// Updated      : February 25, 2023
+// Updated      : March 5, 2023
 //------------------------------------------------------------------------------
 
 #include <catch2/catch_test_macros.hpp>
@@ -15,14 +15,9 @@
 
 
 
-TEST_CASE("Chip HAL", "[Chip][HAL][Registers]")
+TEST_CASE("Chip HAL Functions", "[Chip][HAL][Registers]")
 {
 	auto rand_reg = GENERATE(take(1000, random(INT32_MIN, INT32_MAX)));
-
-
-	SECTION("Chip Initialization") {
-		Chip::init();
-	}
 
 
 	SECTION("Read/Set/Clear Registers") {
@@ -34,7 +29,7 @@ TEST_CASE("Chip HAL", "[Chip][HAL][Registers]")
 		uint32_t reg = static_cast<uint32_t>(rand_reg);
 		uint16_t width = static_cast<uint16_t>(rand_width);
 		uint16_t position = static_cast<uint16_t>(rand_position) % static_cast<uint16_t>(32 / width);
-		uint32_t value = static_cast<uint32_t>(rand_value) & Chip::HAL::generate_bitmask(width);
+		uint32_t value = static_cast<uint32_t>(rand_value) & Chip::HAL::bitmasks[width];
 
 		Chip::HAL::clear_field(&reg, position, width);
 		REQUIRE(Chip::HAL::read_field(&reg, position, width) == 0);

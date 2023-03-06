@@ -25,7 +25,7 @@ uint16_t GPIO_Class::read(const GPIO_Pin_t GPIO_Pin)
 	// Doc: RM0440-9.4.1
 	volatile uint32_t *const MODE_REG = &GPIO_Pin.port->MODER;
 	const uint_fast8_t MODER_FIELD_WIDTH = 2;
-	constexpr uint32_t MODER_FIELD_MASK = Chip::HAL::generate_bitmask(MODER_FIELD_WIDTH);
+	constexpr uint32_t MODER_FIELD_MASK = Chip::HAL::bitmasks[MODER_FIELD_WIDTH];
 	Pin_Mode mode = static_cast<Pin_Mode>(
 		(Chip::HAL::read_register(MODE_REG) & (MODER_FIELD_MASK << (GPIO_Pin.number * MODER_FIELD_WIDTH)))
 			>> (GPIO_Pin.number * MODER_FIELD_WIDTH));
@@ -33,7 +33,7 @@ uint16_t GPIO_Class::read(const GPIO_Pin_t GPIO_Pin)
 	// Doc: RM0440-9.4.5
 	volatile uint32_t *REGISTER;
 	const uint_fast8_t FIELD_WIDTH = 1;
-	constexpr uint32_t FIELD_MASK = Chip::HAL::generate_bitmask(FIELD_WIDTH);
+	constexpr uint32_t FIELD_MASK = Chip::HAL::bitmasks[FIELD_WIDTH];
 
 	switch (mode) {
 		case Pin_Mode::INPUT:
@@ -59,7 +59,7 @@ void GPIO_Class::set(const GPIO_Pin_t GPIO_Pin)
 	// Doc: RM0440-9.4.7 | Setting & clearing bits use the same 32b-register GPIOx->BSRR, [15:0] & [31:16] respectively
 	volatile uint32_t *const REGISTER = &GPIO_Pin.port->BSRR;
 	const uint_fast8_t FIELD_WIDTH = 1;
-	constexpr uint32_t FIELD_MASK = Chip::HAL::generate_bitmask(FIELD_WIDTH);
+	constexpr uint32_t FIELD_MASK = Chip::HAL::bitmasks[FIELD_WIDTH];
 
 	Chip::HAL::set_register(REGISTER, FIELD_MASK << (GPIO_Pin.number * FIELD_WIDTH));
 }
@@ -70,7 +70,7 @@ void GPIO_Class::clear(const GPIO_Pin_t GPIO_Pin)
 	// Doc: RM0440-9.4.7 | Setting & clearing bits use the same 32b-register GPIOx->BSRR, [15:0] & [31:16] respectively
 	volatile uint32_t *const REGISTER = &GPIO_Pin.port->BSRR;
 	const uint_fast8_t FIELD_WIDTH = 1;
-	constexpr uint32_t FIELD_MASK = Chip::HAL::generate_bitmask(FIELD_WIDTH);
+	constexpr uint32_t FIELD_MASK = Chip::HAL::bitmasks[FIELD_WIDTH];
 
 	Chip::HAL::set_register(REGISTER, FIELD_MASK << ((GPIO_Pin.number + 16) * FIELD_WIDTH));
 }
@@ -85,7 +85,7 @@ void GPIO_Class::set_mode(const GPIO_Pin_t GPIO_Pin, const Pin_Mode mode)
 	// Doc: RM0440-9.4.1
 	volatile uint32_t *const REGISTER = &GPIO_Pin.port->MODER;
 	const uint_fast8_t FIELD_WIDTH = 2;
-	constexpr uint32_t FIELD_MASK = Chip::HAL::generate_bitmask(FIELD_WIDTH);
+	constexpr uint32_t FIELD_MASK = Chip::HAL::bitmasks[FIELD_WIDTH];
 
 	Chip::HAL::clear_register(REGISTER, FIELD_MASK << (GPIO_Pin.number * FIELD_WIDTH));
 	Chip::HAL::set_register(REGISTER, static_cast<uint32_t>(mode) << (GPIO_Pin.number * FIELD_WIDTH));
@@ -97,7 +97,7 @@ void GPIO_Class::set_otype(const GPIO_Pin_t GPIO_Pin, const Pin_OType otype)
 	// Doc: RM0440-9.4.2
 	volatile uint32_t *const REGISTER = &GPIO_Pin.port->OTYPER;
 	const uint_fast8_t FIELD_WIDTH = 1;
-	constexpr uint32_t FIELD_MASK = Chip::HAL::generate_bitmask(FIELD_WIDTH);
+	constexpr uint32_t FIELD_MASK = Chip::HAL::bitmasks[FIELD_WIDTH];
 
 	Chip::HAL::clear_register(REGISTER, FIELD_MASK << (GPIO_Pin.number * FIELD_WIDTH));
 	Chip::HAL::set_register(REGISTER, static_cast<uint32_t>(otype) << (GPIO_Pin.number * FIELD_WIDTH));
@@ -109,7 +109,7 @@ void GPIO_Class::set_ospeed(const GPIO_Pin_t GPIO_Pin, const Pin_OSpeed ospeed)
 	// Doc: RM0440-9.4.3
 	volatile uint32_t *const REGISTER = &GPIO_Pin.port->OSPEEDR;
 	const uint_fast8_t FIELD_WIDTH = 2;
-	constexpr uint32_t FIELD_MASK = Chip::HAL::generate_bitmask(FIELD_WIDTH);
+	constexpr uint32_t FIELD_MASK = Chip::HAL::bitmasks[FIELD_WIDTH];
 
 	Chip::HAL::clear_register(REGISTER, FIELD_MASK << (GPIO_Pin.number * FIELD_WIDTH));
 	Chip::HAL::set_register(REGISTER, static_cast<uint32_t>(ospeed) << (GPIO_Pin.number * FIELD_WIDTH));
@@ -121,7 +121,7 @@ void GPIO_Class::set_pupd(const GPIO_Pin_t GPIO_Pin, const Pin_PUPD pupd)
 	// Doc: RM0440-9.4.4
 	volatile uint32_t *const REGISTER = &GPIO_Pin.port->PUPDR;
 	const uint_fast8_t FIELD_WIDTH = 2;
-	constexpr uint32_t FIELD_MASK = Chip::HAL::generate_bitmask(FIELD_WIDTH);
+	constexpr uint32_t FIELD_MASK = Chip::HAL::bitmasks[FIELD_WIDTH];
 
 	Chip::HAL::clear_register(REGISTER, FIELD_MASK << (GPIO_Pin.number * FIELD_WIDTH));
 	Chip::HAL::set_register(REGISTER, static_cast<uint32_t>(pupd) << (GPIO_Pin.number * FIELD_WIDTH));
@@ -133,7 +133,7 @@ void GPIO_Class::set_alternate_function(GPIO_Pin_t GPIO_Pin, Pin_AF af)
 	// Doc: RM0440-9.4.9
 	volatile uint32_t *const REGISTER = (GPIO_Pin.number < 8) ? &GPIO_Pin.port->AFR[0] : &GPIO_Pin.port->AFR[1];
 	const uint_fast8_t FIELD_WIDTH = 4;
-	constexpr uint32_t FIELD_MASK = Chip::HAL::generate_bitmask(FIELD_WIDTH);
+	constexpr uint32_t FIELD_MASK = Chip::HAL::bitmasks[FIELD_WIDTH];
 
 	Chip::HAL::clear_register(REGISTER, FIELD_MASK << (GPIO_Pin.number * FIELD_WIDTH));
 	Chip::HAL::set_register(REGISTER, static_cast<uint32_t>(af) << (GPIO_Pin.number * FIELD_WIDTH));
@@ -149,7 +149,7 @@ void GPIO_Class::set_port_clock(GPIO_TypeDef *const port, const GPIO_Class::Cloc
 	// Doc: RM0440-7.4.15
 	volatile uint32_t *const REGISTER = &RCC->AHB2ENR;
 	const uint_fast8_t FIELD_WIDTH = 1;
-	constexpr uint32_t FIELD_MASK = Chip::HAL::generate_bitmask(FIELD_WIDTH);
+	constexpr uint32_t FIELD_MASK = Chip::HAL::bitmasks[FIELD_WIDTH];
 	uint16_t field_position = 0;
 
 	if (port == GPIOA) {

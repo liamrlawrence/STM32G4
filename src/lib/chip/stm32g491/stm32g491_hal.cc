@@ -6,7 +6,7 @@
 // License      : MIT
 // Copyright    : (C) 2023, Liam Lawrence
 //
-// Updated      : February 25, 2023
+// Updated      : March 5, 2023
 //------------------------------------------------------------------------------
 
 #include "stm32g491_chip.hh"
@@ -36,7 +36,7 @@ uint32_t Chip::HAL::read_field(volatile const uint32_t *const reg, uint16_t posi
 	uint32_t reg_val = Chip::HAL::read_register(reg);
 	uint32_t shift = position * width;
 
-	uint32_t mask = Chip::HAL::generate_bitmask(width) << shift;
+	uint32_t mask = Chip::HAL::bitmasks[width] << shift;
 	return (reg_val & mask) >> shift;
 }
 
@@ -49,6 +49,6 @@ void Chip::HAL::set_field(volatile uint32_t *const reg, uint16_t position, uint1
 
 void Chip::HAL::clear_field(volatile uint32_t *const reg, uint16_t position, uint16_t width)
 {
-	uint32_t mask = Chip::HAL::generate_bitmask(width) << (position * width);
+	uint32_t mask = Chip::HAL::bitmasks[width] << (position * width);
 	Chip::HAL::clear_register(reg, mask);
 }

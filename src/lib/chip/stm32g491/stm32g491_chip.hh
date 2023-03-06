@@ -6,13 +6,13 @@
 // License      : MIT
 // Copyright    : (C) 2023, Liam Lawrence
 //
-// Updated      : February 23, 2023
+// Updated      : March 5, 2023
 //------------------------------------------------------------------------------
 
 #ifndef STM32G4_MODULE_LIBRARY_CHIP_HH
 #define STM32G4_MODULE_LIBRARY_CHIP_HH
 
-
+#include <array>
 #include "../../peripherals/gpio/gpio.hh"
 
 
@@ -30,16 +30,19 @@ namespace Chip {
 		void clear_field(volatile uint32_t *reg, uint16_t position, uint16_t width);
 
 
-		constexpr uint32_t generate_bitmask(const uint32_t n)
-		{
-			uint32_t mask = 1;
-			for (uint_fast8_t i = 1; i < n; i++) {
-				mask <<= 1;
-				mask |= 1;
+		const uint_fast8_t MAX_BITMASK_WIDTH = 16;
+		constexpr std::array<uint32_t, MAX_BITMASK_WIDTH + 1> bitmasks = []() constexpr {
+			std::array<uint32_t, MAX_BITMASK_WIDTH + 1> mask = {0};
+
+			uint32_t m = 0;
+			for (uint_fast8_t i = 0; i < MAX_BITMASK_WIDTH + 1; i++) {
+				mask[i] = m;
+				m = (m << 1) | 1;
 			}
+
 			return mask;
-		}
-	};
+		}();
+	}
 
 	class GPIO : public GPIO_Class {};
 }
