@@ -42,7 +42,7 @@ TEST_CASE("GPIO functions", "[GPIO][PERIPHERAL]")
 	SECTION("GPIO Set Pin Mode") {
 		// Doc: RM0440-9.4.1
 		auto pin_mode = GENERATE(GPIO::Pin_Mode::INPUT, GPIO::Pin_Mode::OUTPUT, GPIO::Pin_Mode::ALTERNATE,
-		                         GPIO::Pin_Mode::ANALOG);
+		                        GPIO::Pin_Mode::ANALOG);
 
 		GPIO::GPIO_Pin_t test_pin = {.port=gpio_ports, .number=static_cast<uint16_t>(pin_numbers)};
 		uint32_t *const REGISTER = &test_pin.port->MODER;

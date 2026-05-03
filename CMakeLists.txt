@@ -124,6 +124,7 @@ ELSE ()
 			src/lib/peripherals/gpio/gpio.cc
 
 			# Source
+            src/types.hh
 			src/main.cc)
 
 	TARGET_COMPILE_OPTIONS(${EXECUTABLE} PRIVATE

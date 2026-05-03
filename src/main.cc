@@ -23,21 +23,21 @@ int main()
 	GPIO::GPIO_Pin_t btn_pin = {.port=GPIOC, .number=13};
 
 	// Enable GPIO port clocks
-	GPIO::set_port_clock(led_pin.port, GPIO::Clock_Status::ENABLED);
-	GPIO::set_port_clock(btn_pin.port, GPIO::Clock_Status::ENABLED);
+	// GPIO::set_port_clock(led_pin.port, GPIO::Clock_Status::ENABLED);
+	// GPIO::set_port_clock(btn_pin.port, GPIO::Clock_Status::Value::ENABLED);
 
 	// Configure pins
-	GPIO::set_mode(led_pin, GPIO::Pin_Mode::OUTPUT);
-	GPIO::set_ospeed(led_pin, GPIO::Pin_OSpeed::VERY_HIGH_SPEED);
-	GPIO::set_pupd(led_pin, GPIO::Pin_PUPD::PULL_DOWN);
-	GPIO::set_mode(btn_pin, GPIO::Pin_Mode::INPUT);
+	GPIO::set_mode(led_pin, GPIO::Reg_GPIO_MODER::OUTPUT);
+	GPIO::set_ospeed(led_pin, GPIO::Reg_GPIO_OSPEEDR::VERY_HIGH_SPEED);
+	GPIO::set_pupd(led_pin, GPIO::Reg_GPIO_PUPDR::PULL_DOWN);
+	GPIO::set_mode(btn_pin, GPIO::Reg_GPIO_MODER::INPUT);
 
 	GPIO::clear(led_pin);
 
-	while (!GPIO::read(btn_pin)) {}
+	while (!GPIO_Class::read(btn_pin)) {}
 
 	for (;;) {
-		if (GPIO::read(led_pin)) {
+		if (GPIO_Class::read(led_pin)) {
 			GPIO::clear(led_pin);
 		} else {
 			GPIO::set(led_pin);
