@@ -1,2 +1,7 @@
 include/** linguist-vendored
 documents/** linguist-vendored
+docs/doxygen/** linguist-generated
+docs/_build/** linguist-documentation
+docs/_static/** linguist-documentation
+docs/_templates/** linguist-documentation
+

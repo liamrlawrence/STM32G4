@@ -15,32 +15,34 @@
 
 int main()
 {
+    using GPIO = Chip::GPIO;
 	Chip::init();
-	using GPIO = Chip::GPIO;
 
 	// Define pins
 	GPIO::GPIO_Pin_t led_pin = {.port=GPIOA, .number=5};
 	GPIO::GPIO_Pin_t btn_pin = {.port=GPIOC, .number=13};
 
 	// Enable GPIO port clocks
-	// GPIO::set_port_clock(led_pin.port, GPIO::Clock_Status::ENABLED);
-	// GPIO::set_port_clock(btn_pin.port, GPIO::Clock_Status::Value::ENABLED);
+	GPIO::set_port_clock(led_pin.port, GPIO::Clock::Status::ENABLED);   // TODO: Do I need ::Value ?
+	GPIO::set_port_clock(btn_pin.port, GPIO::Clock::Status::ENABLED);
 
 	// Configure pins
-	GPIO::set_mode(led_pin, GPIO::Reg_GPIO_MODER::OUTPUT);
-	GPIO::set_ospeed(led_pin, GPIO::Reg_GPIO_OSPEEDR::VERY_HIGH_SPEED);
-	GPIO::set_pupd(led_pin, GPIO::Reg_GPIO_PUPDR::PULL_DOWN);
-	GPIO::set_mode(btn_pin, GPIO::Reg_GPIO_MODER::INPUT);
+	GPIO::set_mode(led_pin, GPIO::Reg::MODER::OUTPUT);
+	GPIO::set_ospeed(led_pin, GPIO::Reg::OSPEEDR::VERY_HIGH_SPEED);
+	GPIO::set_pupd(led_pin, GPIO::Reg::PUPDR::PULL_DOWN);
+	GPIO::set_mode(btn_pin, GPIO::Reg::MODER::INPUT);
 
 	GPIO::clear(led_pin);
 
-	while (!GPIO_Class::read(btn_pin)) {}
+	while (!GPIO::read(btn_pin))
+        ;
 
 	for (;;) {
-		if (GPIO_Class::read(led_pin)) {
+		if (GPIO::read(led_pin)) {
 			GPIO::clear(led_pin);
 		} else {
 			GPIO::set(led_pin);
 		}
 	}
 }
+

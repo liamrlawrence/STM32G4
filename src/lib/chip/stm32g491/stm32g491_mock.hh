@@ -9,8 +9,7 @@
 // Updated      : February 25, 2023
 //------------------------------------------------------------------------------
 
-#ifndef STM32G4_MODULE_LIBRARY_MOCK_HH
-#define STM32G4_MODULE_LIBRARY_MOCK_HH
+#pragma once
 
 #include <cstdint>
 
@@ -94,5 +93,3 @@ typedef struct {
 
 extern RCC_TypeDef *RCC;
 
-
-#endif //STM32G4_MODULE_LIBRARY_MOCK_HH

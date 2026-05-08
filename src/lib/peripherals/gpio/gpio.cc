@@ -1,12 +1,12 @@
 //------------------------------------------------------------------------------
-// File Name    : gpio.cc
-// Authors      : Liam Lawrence
-// Created      : January 19, 2023
-// Project      : STM32G4 Module Library
-// License      : MIT
-// Copyright    : (C) 2023, Liam Lawrence
+// File Name	: gpio.cc
+// Authors		: Liam Lawrence
+// Created		: January 19, 2023
+// Project		: STM32G4 Module Library
+// License		: MIT
+// Copyright	: (C) 2023, Liam Lawrence
 //
-// Updated      : March 5, 2023
+// Updated		: March 5, 2023
 //------------------------------------------------------------------------------
 
 // TODO: Add logging
@@ -29,15 +29,12 @@ u32 GPIO::read(const GPIO_Pin_t GPIO_Pin)
 	volatile u32 *const MODE_REG = &GPIO_Pin.port->MODER;
 	constexpr u32 MODER_WIDTH = GPIO::Reg::MODER::WIDTH;
 	constexpr u32 MODER_MASK = HAL::generate_bitmask(MODER_WIDTH);
-    GPIO::Reg::MODER::Value mode = static_cast<GPIO::Reg::MODER::Value>(
+	GPIO::Reg::MODER::Value mode = static_cast<GPIO::Reg::MODER::Value>(
 		(HAL::read_register(MODE_REG) & (MODER_MASK << (GPIO_Pin.number * MODER_WIDTH)))
 			>> (GPIO_Pin.number * MODER_WIDTH));
 
 	// DOC: RM0440-9.4.5
 	volatile u32 *REGISTER;
-    constexpr u32 FIELD_WIDTH = GPIO::Reg::IDR_ODR::WIDTH;
-	constexpr u32 FIELD_MASK = HAL::generate_bitmask(FIELD_WIDTH);
-
 	switch (mode) {
 		case GPIO::Reg::MODER::INPUT:
 			REGISTER = &GPIO_Pin.port->IDR;
@@ -47,13 +44,17 @@ u32 GPIO::read(const GPIO_Pin_t GPIO_Pin)
 			REGISTER = &GPIO_Pin.port->ODR;
 			break;
 
-		case GPIO::Reg::MODER::ALTERNATE:
 		case GPIO::Reg::MODER::ANALOG:
+			// TODO: return Analog::read_channel();
+
+		case GPIO::Reg::MODER::ALTERNATE:
 		default:
 			return 0;
 	}
 
-	return (HAL::read_register(REGISTER) & (FIELD_MASK << (GPIO_Pin.number * FIELD_WIDTH))) ? 1 : 0;
+	constexpr u32 WIDTH = GPIO::Reg::IDR_ODR::WIDTH;
+	constexpr u32 MASK = HAL::generate_bitmask(WIDTH);
+	return (HAL::read_register(REGISTER) & (MASK << (GPIO_Pin.number * WIDTH))) ? 1 : 0;
 }
 
 
@@ -89,9 +90,9 @@ void GPIO::set_mode(const GPIO_Pin_t GPIO_Pin, const GPIO::Reg::MODER::Value mod
 	volatile u32 *const REGISTER = &GPIO_Pin.port->MODER;
 	constexpr u32 WIDTH = GPIO::Reg::MODER::WIDTH;
 	constexpr u32 MASK = HAL::generate_bitmask(WIDTH);
+	u32 value = mode_value << (GPIO_Pin.number * WIDTH);
 
-	HAL::clear_register(REGISTER, MASK << (GPIO_Pin.number * WIDTH));
-	HAL::set_register(REGISTER, mode_value << (GPIO_Pin.number * WIDTH));
+	HAL::update_register(REGISTER, MASK, value);
 }
 
 
@@ -101,9 +102,9 @@ void GPIO::set_otype(const GPIO_Pin_t GPIO_Pin, const GPIO::Reg::OTYPER::Value o
 	volatile u32 *const REGISTER = &GPIO_Pin.port->OTYPER;
 	constexpr u32 WIDTH = GPIO::Reg::OTYPER::WIDTH;
 	constexpr u32 MASK = HAL::generate_bitmask(WIDTH);
+	u32 value = otype_value << (GPIO_Pin.number * WIDTH);
 
-	HAL::clear_register(REGISTER, MASK << (GPIO_Pin.number * WIDTH));
-	HAL::set_register(REGISTER, otype_value << (GPIO_Pin.number * WIDTH));
+	HAL::update_register(REGISTER, MASK, value);
 }
 
 
@@ -113,9 +114,9 @@ void GPIO::set_ospeed(const GPIO_Pin_t GPIO_Pin, const GPIO::Reg::OSPEEDR::Value
 	volatile u32 *const REGISTER = &GPIO_Pin.port->OSPEEDR;
 	constexpr u32 WIDTH = GPIO::Reg::OSPEEDR::WIDTH;
 	constexpr u32 MASK = HAL::generate_bitmask(WIDTH);
+	u32 value = ospeed_value << (GPIO_Pin.number * WIDTH);
 
-	HAL::clear_register(REGISTER, MASK << (GPIO_Pin.number * WIDTH));
-	HAL::set_register(REGISTER, ospeed_value << (GPIO_Pin.number * WIDTH));
+	HAL::update_register(REGISTER, MASK, value);
 }
 
 
@@ -125,9 +126,9 @@ void GPIO::set_pupd(const GPIO_Pin_t GPIO_Pin, const GPIO::Reg::PUPDR::Value pup
 	volatile u32 *const REGISTER = &GPIO_Pin.port->PUPDR;
 	constexpr u32 WIDTH = GPIO::Reg::PUPDR::WIDTH;
 	constexpr u32 MASK = HAL::generate_bitmask(WIDTH);
+	u32 value = pupd_value << (GPIO_Pin.number * WIDTH);
 
-	HAL::clear_register(REGISTER, MASK << (GPIO_Pin.number * WIDTH));
-	HAL::set_register(REGISTER, pupd_value << (GPIO_Pin.number * WIDTH));
+	HAL::update_register(REGISTER, MASK, value);
 }
 
 
@@ -137,9 +138,9 @@ void GPIO::set_alternate_function(GPIO_Pin_t GPIO_Pin, GPIO::Reg::AFR::Value af_
 	volatile u32 *const REGISTER = (GPIO_Pin.number < 8) ? &GPIO_Pin.port->AFR[0] : &GPIO_Pin.port->AFR[1];
 	constexpr u32 WIDTH = GPIO::Reg::AFR::WIDTH;
 	constexpr u32 MASK = HAL::generate_bitmask(WIDTH);
+	u32 value = af_value << (GPIO_Pin.number * WIDTH);
 
-	HAL::clear_register(REGISTER, MASK << (GPIO_Pin.number * WIDTH));
-	HAL::set_register(REGISTER, af_value << (GPIO_Pin.number * WIDTH));
+	HAL::update_register(REGISTER, MASK, value);
 }
 
 
@@ -170,15 +171,16 @@ void GPIO::set_port_clock(GPIO_TypeDef *const port, const GPIO::Clock::Status::V
 	} else if (port == GPIOG) {
 		field_position = 6;
 	} else {
-        // TODO: Error message
-    }
+		// TODO: Error message
+	}
 
 	switch (clock_status) {
-        case Clock::Status::ENABLED:
-			HAL::set_register(REGISTER, MASK << (field_position * WIDTH));
+		case Clock::Status::ENABLED:
+			HAL::update_register(REGISTER, MASK, Clock::Status::ENABLED << (field_position * WIDTH));
 			break;
-        case Clock::Status::DISABLED:
+		case Clock::Status::DISABLED:
 			HAL::clear_register(REGISTER, MASK << (field_position * WIDTH));
 			break;
 	}
 }
+

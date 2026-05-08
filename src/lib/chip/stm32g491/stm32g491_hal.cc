@@ -32,6 +32,15 @@ void Chip::HAL::clear_register(volatile u32 *const reg, u32 val)
 }
 
 
+void Chip::HAL::update_register(volatile u32 *const reg, u32 mask, u32 val)
+{
+    u32 reg_tmp = *reg;
+    reg_tmp &= ~(mask);
+    reg_tmp |= val;
+    *reg = reg_tmp;
+}
+
+
 u32 Chip::HAL::read_field(volatile const u32 *const reg, uint16_t position, uint16_t width)
 {
 	u32 reg_val = Chip::HAL::read_register(reg);
@@ -42,15 +51,15 @@ u32 Chip::HAL::read_field(volatile const u32 *const reg, uint16_t position, uint
 }
 
 
-void Chip::HAL::set_field(volatile u32 *const reg, uint16_t position, uint16_t width, u32 val)
-{
-	Chip::HAL::set_register(reg, val << (position * width));
-}
-
-
-void Chip::HAL::clear_field(volatile u32 *const reg, uint16_t position, uint16_t width)
-{
-	u32 mask = Chip::HAL::generate_bitmask(width) << (position * width);
-	Chip::HAL::clear_register(reg, mask);
-}
+// void Chip::HAL::set_field(volatile u32 *const reg, uint16_t position, uint16_t width, u32 val)
+// {
+// 	Chip::HAL::set_register(reg, val << (position * width));
+// }
+//
+//
+// void Chip::HAL::clear_field(volatile u32 *const reg, uint16_t position, uint16_t width)
+// {
+// 	u32 mask = Chip::HAL::generate_bitmask(width) << (position * width);
+// 	Chip::HAL::clear_register(reg, mask);
+// }
 

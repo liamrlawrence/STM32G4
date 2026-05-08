@@ -9,19 +9,14 @@
 // Updated      : February 23, 2023
 //------------------------------------------------------------------------------
 
-#ifndef STM32G4_MODULE_LIBRARY_CHIP_HH
-#define STM32G4_MODULE_LIBRARY_CHIP_HH
+#pragma once
 
-
-// #include "stm32g491_hal.hh"
-// #include "../../peripherals/gpio/gpio.hh"
+#include "stm32g491_hal.hh"
+#include "../../peripherals/gpio/gpio.hh"
 
 
 
 namespace Chip {
 	void init();
 }
-
-
-#endif //STM32G4_MODULE_LIBRARY_CHIP_HH
 

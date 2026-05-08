@@ -9,8 +9,7 @@
 // Updated      : February 25, 2023
 //------------------------------------------------------------------------------
 
-#ifndef STM32G4_MODULE_LIBRARY_GPIO_HH
-#define STM32G4_MODULE_LIBRARY_GPIO_HH
+#pragma once
 
 #include "../../../types.hh"
 
@@ -141,5 +140,3 @@ private:
 };
 }
 
-
-#endif //STM32G4_MODULE_LIBRARY_GPIO_HH

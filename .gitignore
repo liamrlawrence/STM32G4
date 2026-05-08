@@ -1,4 +1,13 @@
+.DS_STORE
+
 cmake-build-debug/
 cmake-build-release/
 cmake-build-test/
-.idea/
+
+docs/_build/
+docs/_static/
+docs/_templates/
+docs/doxygen/
+
+venv/
+
