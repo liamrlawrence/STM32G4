@@ -1,0 +1,68 @@
+# Doxyfile for STM32G4
+
+#---------------------------------------------------------------------------
+# Project
+#---------------------------------------------------------------------------
+PROJECT_NAME           = "STM32G4"
+PROJECT_NUMBER         = 1.0
+PROJECT_BRIEF          = "STM32G4 Firmware Library"
+OUTPUT_DIRECTORY       = docs/doxygen
+
+#---------------------------------------------------------------------------
+# Input
+#---------------------------------------------------------------------------
+INPUT                  = src/
+FILE_PATTERNS          = *.cc *.hh *.h *.cpp
+RECURSIVE              = YES
+EXCLUDE                =
+EXCLUDE_PATTERNS       = */build/* */.git/*
+
+#---------------------------------------------------------------------------
+# Output format (XML is required for Breathe)
+#---------------------------------------------------------------------------
+GENERATE_XML           = YES
+XML_OUTPUT             = xml
+
+GENERATE_HTML          = NO   # Sphinx/Breathe will handle HTML
+GENERATE_LATEX         = NO
+
+#---------------------------------------------------------------------------
+# Extraction — pull in everything so Breathe has full coverage
+#---------------------------------------------------------------------------
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = YES
+EXTRACT_STATIC         = YES
+EXTRACT_LOCAL_CLASSES  = YES
+
+#---------------------------------------------------------------------------
+# Source browsing
+#---------------------------------------------------------------------------
+SOURCE_BROWSER         = YES
+INLINE_SOURCES         = NO
+STRIP_CODE_COMMENTS    = NO
+
+#---------------------------------------------------------------------------
+# Preprocessing
+#---------------------------------------------------------------------------
+ENABLE_PREPROCESSING   = YES
+MACRO_EXPANSION        = YES
+EXPAND_ONLY_PREDEF     = NO
+PREDEFINED             =
+
+#---------------------------------------------------------------------------
+# Dot / graphs (set to NO if Graphviz is not installed)
+#---------------------------------------------------------------------------
+HAVE_DOT               = NO
+CLASS_DIAGRAMS         = YES
+COLLABORATION_GRAPH    = YES
+INCLUDE_GRAPH          = YES
+INCLUDED_BY_GRAPH      = YES
+
+#---------------------------------------------------------------------------
+# Warnings
+#---------------------------------------------------------------------------
+QUIET                  = NO
+WARNINGS               = YES
+WARN_IF_UNDOCUMENTED   = YES
+WARN_IF_DOC_ERROR      = YES
+
