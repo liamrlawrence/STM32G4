@@ -4,9 +4,8 @@
 // Created      : January 19, 2023
 // Project      : STM32G4 Module Library
 // License      : MIT
-// Copyright    : (C) 2023, Liam Lawrence
 //
-// Updated      : March 5, 2023
+// Updated      : May 26, 2026
 //------------------------------------------------------------------------------
 
 #include "lib/chip/stm32g491/stm32g491_chip.hh"
@@ -15,15 +14,15 @@
 
 int main()
 {
-    using GPIO = Chip::GPIO;
+	using GPIO = Chip::GPIO;
 	Chip::init();
 
 	// Define pins
-	GPIO::GPIO_Pin_t led_pin = {.port=GPIOA, .number=5};
-	GPIO::GPIO_Pin_t btn_pin = {.port=GPIOC, .number=13};
+	GPIO::GPIO_Pin_t led_pin = {.port = GPIOA, .number = 5};
+	GPIO::GPIO_Pin_t btn_pin = {.port = GPIOC, .number = 13};
 
 	// Enable GPIO port clocks
-	GPIO::set_port_clock(led_pin.port, GPIO::Clock::Status::ENABLED);   // TODO: Do I need ::Value ?
+	GPIO::set_port_clock(led_pin.port, GPIO::Clock::Status::ENABLED);
 	GPIO::set_port_clock(btn_pin.port, GPIO::Clock::Status::ENABLED);
 
 	// Configure pins
@@ -34,11 +33,11 @@ int main()
 
 	GPIO::clear(led_pin);
 
-	while (!GPIO::read(btn_pin))
-        ;
+	while(!GPIO::read(btn_pin))
+		;
 
-	for (;;) {
-		if (GPIO::read(led_pin)) {
+	for(;;) {
+		if(GPIO::read(led_pin)) {
 			GPIO::clear(led_pin);
 		} else {
 			GPIO::set(led_pin);

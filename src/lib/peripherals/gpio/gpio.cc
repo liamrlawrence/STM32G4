@@ -5,7 +5,7 @@
 // Project      : STM32G4 Module Library
 // License      : MIT
 //
-// Updated      : May 9, 2026
+// Updated      : May 26, 2026
 //------------------------------------------------------------------------------
 
 // TODO: Add logging
@@ -13,7 +13,6 @@
 // (boot) or PG10 (reset)
 
 #include "gpio.hh"
-#include "../../../types.hh"
 #include "../../chip/stm32g491/stm32g491_hal.hh"
 
 

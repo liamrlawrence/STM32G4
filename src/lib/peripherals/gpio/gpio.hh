@@ -5,7 +5,7 @@
 // Project	    : STM32G4 Module Library
 // License	    : MIT
 //
-// Updated	    : May 9, 2026
+// Updated	    : May 26, 2026
 //------------------------------------------------------------------------------
 
 
@@ -29,12 +29,12 @@
 
 #pragma once
 
-#include "../../../types.hh"
+#include "types.hh"
 
 #ifdef UNIT_TEST
-#include "../../chip/stm32g491/stm32g491_mock.hh"
+// #include "../../chip/stm32g491/stm32g491_mock.hh"
 #else
-#include "../../../../include/stm32g491xx.h"
+#include "stm32g491xx.h"
 // #include "../../chip/stm32g491/reg.hh"
 #endif
 
@@ -93,8 +93,8 @@ public:
 			/// Output slew rate.
 			/// Frequencies are STM32G474 maximums at C=~50 pF, 2.7 V ≤ VDD ≤ 3.6 V.
 			/// See RM0440-9.4.3. Values change depending on specific chip.
-			enum Value {
-				VERY_LOW_SPEED  = 0b00,  ///< ~5 MHz (C=50 pf) - Lowest slew rate, lowest EMI
+			enum Value : u32 {
+				VERY_LOW_SPEED  = 0b00,  ///< ~5 MHz (C=50 pf) - Lowest slew rate & EMI
 				LOW_SPEED       = 0b01,  ///< ~25 MHz (C=50 pf)
 				HIGH_SPEED      = 0b10,  ///< ~50 MHz (C=50 pf)
 				VERY_HIGH_SPEED = 0b11,  ///< ~120 MHz (C=30 pf)
@@ -114,7 +114,7 @@ public:
 		struct AFR {
 			static constexpr u32 WIDTH = 4;
 			/// See RM0440-9.4.9
-			enum Value {
+			enum Value : u32 {
 				AF0  = 0b0000,
 				AF1  = 0b0001,
 				AF2  = 0b0010,
@@ -140,7 +140,7 @@ public:
 		struct Status {
 			static constexpr u32 WIDTH = 1;
 			/// See RM0440-7.4.15
-			enum Value {
+			enum Value : u32 {
 				DISABLED = 0b0,
 				ENABLED  = 0b1,
 			};
@@ -150,6 +150,7 @@ public:
 
 	/// @addtogroup GPIO_IO
 	/// @{
+
 	/**
 	 * @brief Read the current value of a GPIO pin.
 	 *
@@ -185,11 +186,13 @@ public:
 	 * @note See RM0440-9.4.7
 	 */
 	static void clear(GPIO_Pin_t GPIO_Pin);
+
 	/// @}	endgroup GPIO_IO
 
 
 	/// @addtogroup GPIO_Config
 	/// @{
+
 	/**
 	 * @brief Set the mode of a GPIO pin.
 	 *
@@ -240,11 +243,13 @@ public:
 	 * @note See RM0440-9.4.9 Pins 0–7 map to AFR[0], pins 8–15 to AFR[1].
 	 */
 	static void set_alternate_function(GPIO_Pin_t GPIO_Pin, GPIO::Reg::AFR::Value af);
+
 	/// @}	endgroup GPIO_Config
 
 
 	/// @addtogroup GPIO_Port
 	/// @{
+
 	/**
 	 * @brief Enable or disable the clock for a GPIO port.
 	 *
@@ -257,6 +262,7 @@ public:
 	 * @note See RM0440-7.4.15.
 	 */
 	static void set_port_clock(GPIO_TypeDef* port, GPIO::Clock::Status::Value clock_status);
+
 	/// @}	endgroup GPIO_Port
 
 
