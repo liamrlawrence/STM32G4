@@ -5,7 +5,7 @@
 // Project	    : STM32G4 Module Library
 // License	    : MIT
 //
-// Updated	    : May 26, 2026
+// Updated	    : May 27, 2026
 //------------------------------------------------------------------------------
 
 
@@ -59,7 +59,7 @@ public:
 
 	struct Reg {
 		struct IDR_ODR {
-			static constexpr u32 WIDTH = 2;
+			static constexpr u32 WIDTH = 1;
 		};
 
 		struct BSRR {

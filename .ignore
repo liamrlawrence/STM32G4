@@ -1,3 +1,4 @@
-include/
+include/stm32
+include/segger
 documents/
 

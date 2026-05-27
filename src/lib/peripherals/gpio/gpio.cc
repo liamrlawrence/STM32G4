@@ -5,15 +5,16 @@
 // Project      : STM32G4 Module Library
 // License      : MIT
 //
-// Updated      : May 26, 2026
+// Updated      : May 27, 2026
 //------------------------------------------------------------------------------
 
-// TODO: Add logging
 // TODO: DOC: R0440-9.3.15-9.3.16 | Warning logged if user is using pin PB8
 // (boot) or PG10 (reset)
 
 #include "gpio.hh"
 #include "../../chip/stm32g491/stm32g491_hal.hh"
+
+#include "log.hh"
 
 
 
@@ -21,6 +22,20 @@ using HAL  = Chip::HAL;
 using GPIO = Chip::GPIO;
 
 
+static char gpio_port_letter(const GPIO_TypeDef* const port)
+{
+	if(port == GPIOA) return 'A';
+	if(port == GPIOB) return 'B';
+	if(port == GPIOC) return 'C';
+	if(port == GPIOD) return 'D';
+	if(port == GPIOE) return 'E';
+	if(port == GPIOF) return 'F';
+	if(port == GPIOG) return 'G';
+	return '?';
+}
+
+
+// TODO: Test saving read-port as a value in GPIO_Pin_t and comparing read speeds
 u32 GPIO::read(const GPIO_Pin_t GPIO_Pin)
 {
 	// DOC: RM0440-9.4.1
@@ -53,7 +68,9 @@ u32 GPIO::read(const GPIO_Pin_t GPIO_Pin)
 
 	constexpr u32 WIDTH = GPIO::Reg::IDR_ODR::WIDTH;
 	constexpr u32 MASK  = HAL::generate_bitmask(WIDTH);
-	return (HAL::read_register(REGISTER) & (MASK << (GPIO_Pin.number * WIDTH))) ? 1 : 0;
+	const u32 read      = (HAL::read_register(REGISTER) & (MASK << (GPIO_Pin.number * WIDTH))) ? 1 : 0;
+	LOG_DEBUG("GPIO::read  P%c%u=%u", gpio_port_letter(GPIO_Pin.port), GPIO_Pin.number, read);
+	return read;
 }
 
 
@@ -66,6 +83,7 @@ void GPIO::set(const GPIO_Pin_t GPIO_Pin)
 	constexpr u32 MASK   = HAL::generate_bitmask(WIDTH);
 
 	HAL::set_register(REGISTER, MASK << (GPIO_Pin.number * WIDTH));
+	LOG_DEBUG("GPIO::set   P%c%u", gpio_port_letter(GPIO_Pin.port), GPIO_Pin.number);
 }
 
 
@@ -78,6 +96,7 @@ void GPIO::clear(const GPIO_Pin_t GPIO_Pin)
 	constexpr u32 MASK   = HAL::generate_bitmask(WIDTH);
 
 	HAL::set_register(REGISTER, MASK << ((GPIO_Pin.number + 16) * WIDTH));
+	LOG_DEBUG("GPIO::clear P%c%u", gpio_port_letter(GPIO_Pin.port), GPIO_Pin.number);
 }
 
 
@@ -87,9 +106,12 @@ void GPIO::set_mode(const GPIO_Pin_t GPIO_Pin, const GPIO::Reg::MODER::Value mod
 	vu32* const REGISTER = &GPIO_Pin.port->MODER;
 	constexpr u32 WIDTH  = GPIO::Reg::MODER::WIDTH;
 	constexpr u32 MASK   = HAL::generate_bitmask(WIDTH);
-	u32 value            = mode_value << (GPIO_Pin.number * WIDTH);
+	const u32 shift      = (GPIO_Pin.number * WIDTH);
 
-	HAL::update_register(REGISTER, MASK, value);
+	HAL::update_register(REGISTER, MASK << shift, mode_value << shift);
+	LOG_DEBUG(
+	    "GPIO::set_mode   P%c%u = %u", gpio_port_letter(GPIO_Pin.port), GPIO_Pin.number, mode_value
+	);
 }
 
 
@@ -99,9 +121,12 @@ void GPIO::set_otype(const GPIO_Pin_t GPIO_Pin, const GPIO::Reg::OTYPER::Value o
 	vu32* const REGISTER = &GPIO_Pin.port->OTYPER;
 	constexpr u32 WIDTH  = GPIO::Reg::OTYPER::WIDTH;
 	constexpr u32 MASK   = HAL::generate_bitmask(WIDTH);
-	u32 value            = otype_value << (GPIO_Pin.number * WIDTH);
+	const u32 shift      = (GPIO_Pin.number * WIDTH);
 
-	HAL::update_register(REGISTER, MASK, value);
+	HAL::update_register(REGISTER, MASK << shift, otype_value << shift);
+	LOG_DEBUG(
+	    "GPIO::set_otype  P%c%u = %u", gpio_port_letter(GPIO_Pin.port), GPIO_Pin.number, otype_value
+	);
 }
 
 
@@ -111,9 +136,12 @@ void GPIO::set_ospeed(const GPIO_Pin_t GPIO_Pin, const GPIO::Reg::OSPEEDR::Value
 	vu32* const REGISTER = &GPIO_Pin.port->OSPEEDR;
 	constexpr u32 WIDTH  = GPIO::Reg::OSPEEDR::WIDTH;
 	constexpr u32 MASK   = HAL::generate_bitmask(WIDTH);
-	u32 value            = ospeed_value << (GPIO_Pin.number * WIDTH);
+	const u32 shift      = (GPIO_Pin.number * WIDTH);
 
-	HAL::update_register(REGISTER, MASK, value);
+	HAL::update_register(REGISTER, MASK << shift, ospeed_value << shift);
+	LOG_DEBUG(
+	    "GPIO::set_ospeed P%c%u = %u", gpio_port_letter(GPIO_Pin.port), GPIO_Pin.number, ospeed_value
+	);
 }
 
 
@@ -123,9 +151,12 @@ void GPIO::set_pupd(const GPIO_Pin_t GPIO_Pin, const GPIO::Reg::PUPDR::Value pup
 	vu32* const REGISTER = &GPIO_Pin.port->PUPDR;
 	constexpr u32 WIDTH  = GPIO::Reg::PUPDR::WIDTH;
 	constexpr u32 MASK   = HAL::generate_bitmask(WIDTH);
-	u32 value            = pupd_value << (GPIO_Pin.number * WIDTH);
+	const u32 shift      = (GPIO_Pin.number * WIDTH);
 
-	HAL::update_register(REGISTER, MASK, value);
+	HAL::update_register(REGISTER, MASK << shift, pupd_value << shift);
+	LOG_DEBUG(
+	    "GPIO::set_pupd   P%c%u = %u", gpio_port_letter(GPIO_Pin.port), GPIO_Pin.number, pupd_value
+	);
 }
 
 
@@ -135,9 +166,11 @@ void GPIO::set_alternate_function(GPIO_Pin_t GPIO_Pin, GPIO::Reg::AFR::Value af_
 	vu32* const REGISTER = (GPIO_Pin.number < 8) ? &GPIO_Pin.port->AFR[0] : &GPIO_Pin.port->AFR[1];
 	constexpr u32 WIDTH  = GPIO::Reg::AFR::WIDTH;
 	constexpr u32 MASK   = HAL::generate_bitmask(WIDTH);
-	u32 value            = af_value << (GPIO_Pin.number * WIDTH);
+	const u32 pin        = (GPIO_Pin.number < 8) ? GPIO_Pin.number : GPIO_Pin.number - 8;
+	const u32 shift      = (pin * WIDTH);
 
-	HAL::update_register(REGISTER, MASK, value);
+	HAL::update_register(REGISTER, MASK << shift, af_value << shift);
+	LOG_DEBUG("GPIO::set_af     P%c%u = %u", gpio_port_letter(GPIO_Pin.port), GPIO_Pin.number, af_value);
 }
 
 
@@ -147,8 +180,8 @@ void GPIO::set_port_clock(GPIO_TypeDef* const port, const GPIO::Clock::Status::V
 	vu32* const REGISTER = &RCC->AHB2ENR;
 	constexpr u32 WIDTH  = GPIO::Clock::Status::WIDTH;
 	constexpr u32 MASK   = HAL::generate_bitmask(WIDTH);
-	u32 field_position   = 0;
 
+	u32 field_position;
 	if(port == GPIOA) {
 		field_position = 0;
 	} else if(port == GPIOB) {
@@ -164,15 +197,20 @@ void GPIO::set_port_clock(GPIO_TypeDef* const port, const GPIO::Clock::Status::V
 	} else if(port == GPIOG) {
 		field_position = 6;
 	} else {
-		// TODO: Error message
+		LOG_ERROR("GPIO::set_port_clock P%c unknown port", gpio_port_letter(port));
+		return;
 	}
+	const u32 shift = (field_position * WIDTH);
 
 	switch(clock_status) {
 	case Clock::Status::ENABLED:
-		HAL::update_register(REGISTER, MASK, Clock::Status::ENABLED << (field_position * WIDTH));
+		HAL::update_register(REGISTER, MASK << shift, Clock::Status::ENABLED << shift);
+		(void)HAL::read_register(REGISTER);  // TODO: Look up if required to add 1 clock cycle delay
+		LOG_DEBUG("GPIO::set_port_clock P%c ENABLE", gpio_port_letter(port));
 		break;
 	case Clock::Status::DISABLED:
-		HAL::clear_register(REGISTER, MASK << (field_position * WIDTH));
+		HAL::clear_register(REGISTER, MASK << shift);
+		LOG_DEBUG("GPIO::set_port_clock P%c DISABLE", gpio_port_letter(port));
 		break;
 	}
 }

@@ -5,7 +5,7 @@
 // Project      : STM32G4 Module Library
 // License      : MIT
 //
-// Updated      : May 26, 2026
+// Updated      : May 27, 2026
 //------------------------------------------------------------------------------
 
 #include "lib/chip/stm32g491/stm32g491_chip.hh"
@@ -27,20 +27,26 @@ int main()
 
 	// Configure pins
 	GPIO::set_mode(led_pin, GPIO::Reg::MODER::OUTPUT);
+	GPIO::set_otype(led_pin, GPIO::Reg::OTYPER::PUSH_PULL);
 	GPIO::set_ospeed(led_pin, GPIO::Reg::OSPEEDR::VERY_HIGH_SPEED);
 	GPIO::set_pupd(led_pin, GPIO::Reg::PUPDR::PULL_DOWN);
-	GPIO::set_mode(btn_pin, GPIO::Reg::MODER::INPUT);
 
-	GPIO::clear(led_pin);
+	GPIO::set_mode(btn_pin, GPIO::Reg::MODER::INPUT);
+	GPIO::set_otype(btn_pin, GPIO::Reg::OTYPER::PUSH_PULL);
+	GPIO::set_ospeed(btn_pin, GPIO::Reg::OSPEEDR::VERY_HIGH_SPEED);
+	GPIO::set_pupd(btn_pin, GPIO::Reg::PUPDR::PULL_DOWN);
+
+	// Main
+	GPIO::set(led_pin);
 
 	while(!GPIO::read(btn_pin))
 		;
 
 	for(;;) {
-		if(GPIO::read(led_pin)) {
-			GPIO::clear(led_pin);
-		} else {
+		if(GPIO::read(btn_pin)) {
 			GPIO::set(led_pin);
+		} else {
+			GPIO::clear(led_pin);
 		}
 	}
 }

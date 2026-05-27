@@ -11,10 +11,10 @@ find_program(OBJCOPY arm-none-eabi-objcopy REQUIRED)
 
 # Configurable parameters
 set(EXECUTABLE ${PROJECT_NAME}.elf)
-set(OPT_FLAG "-Os")
-set(DEBUG_FLAG "-g")
-set(STACK_MAX_BYTES "512")
-set(MCU "STM32G491xx")
+set(OPT_FLAG -Os)
+set(DEBUG_FLAG -g -DLOG_LEVEL=5)
+set(STACK_MAX_BYTES 512)
+set(MCU STM32G491xx)
 
 # Warning flags
 list(APPEND WARNING_FLAGS
@@ -59,6 +59,9 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 endif()
 
 add_executable(${EXECUTABLE}
+        # Debug
+        include/segger/SEGGER_RTT.c
+        include/segger/SEGGER_RTT_printf.c
         # Drivers
         include/stm32/startup_stm32g491xx.s
         include/stm32/system_stm32g4xx.c
@@ -75,6 +78,7 @@ target_include_directories(${EXECUTABLE} PRIVATE
         ${CMAKE_SOURCE_DIR}/src
         ${CMAKE_SOURCE_DIR}/include
         ${CMAKE_SOURCE_DIR}/include/stm32
+        ${CMAKE_SOURCE_DIR}/include/segger
         )
 
 target_compile_definitions(${EXECUTABLE} PRIVATE

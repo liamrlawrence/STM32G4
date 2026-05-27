@@ -1,7 +1,9 @@
-.PHONY: all clean docs build configure
+.PHONY: all clean docs build configure run
 
 BUILD_DIR := build
 TOOLCHAIN_FILE := arm-toolchain.cmake
+JLINK_DEVICE := STM32G491RE
+JLINK_SCRIPT := flash.jlink
 
 configure:
 	@if [ -d "$(BUILD_DIR)" ]; then \
@@ -21,4 +23,8 @@ docs:
 clean:
 	rm -rf $(BUILD_DIR) docs/doxygen docs/_build
 	@echo "Cleaned."
+
+
+run: $(ELF_FILE) build
+	JLinkExe -device $(JLINK_DEVICE) -if SWD -speed 4000 -autoconnect 1 -commanderscript $(JLINK_SCRIPT)
 

@@ -1,3 +1,4 @@
-include/stm32/** linguist-vendored
 documents/** linguist-vendored
+include/stm32/** linguist-vendored
+include/segger/** linguist-vendored
 

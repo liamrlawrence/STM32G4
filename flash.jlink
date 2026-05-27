@@ -1,0 +1,5 @@
+loadfile build/STM32G4_Module_Library.elf
+r
+g
+exit
+

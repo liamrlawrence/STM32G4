@@ -6,15 +6,17 @@
 // License      : MIT
 // Copyright    : (C) 2023, Liam Lawrence
 //
-// Updated      : January 19, 2023
+// Updated      : May 27, 2026
 //------------------------------------------------------------------------------
 
 #include "stm32g491_chip.hh"
+#include "log.hh"
 
 
 
 void Chip::init()
 {
-
+	SEGGER_RTT_Init();
+	LOG_INFO("RTT is alive");
 }
 

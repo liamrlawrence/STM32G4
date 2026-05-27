@@ -5,7 +5,7 @@
 // Project      : STM32G4 Module Library
 // License      : MIT
 //
-// Updated      : May 26, 2026
+// Updated      : May 27, 2026
 //------------------------------------------------------------------------------
 
 #include "stm32g491_hal.hh"
@@ -30,7 +30,7 @@ void Chip::HAL::update_register(vu32* const reg, u32 mask, u32 val)
 }
 
 
-u32 Chip::HAL::read_field(volatile const u32* const reg, u16 position, u16 width)
+u32 Chip::HAL::read_field(const vu32* const reg, u16 position, u16 width)
 {
 	u32 reg_val = Chip::HAL::read_register(reg);
 	u32 shift   = position * width;
